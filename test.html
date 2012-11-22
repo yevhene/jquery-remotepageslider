@@ -4,12 +4,25 @@
         <script type="text/javascript" src="contentslider.js"></script>
         <script type="text/javascript">
             $(document).ready(function() {
-                var slider = $('#contentslider').contentSlider();
-                $('#prev').click(function() {
-                    slider.prev();
+                var slider = $('#contentslider').contentSlider({
+                    hasIndex: function(index) {
+                        return $.inArray(index, [0, 1, 2, 3]) != -1;
+                    },
+                    getPage: function(index) {
+                        return $('<div style="width:320px; height:180px; margin:10px; background-color:yellow">' + index + '</div>');
+                    }
                 });
-                $('#next').click(function() {
-                    slider.next();
+                $('#b0').click(function() {
+                    slider.show(0, 'slow');
+                });
+                $('#b1').click(function() {
+                    slider.show(1, 'slow');
+                });
+                $('#b2').click(function() {
+                    slider.show(2, 'slow');
+                });
+                $('#b3').click(function() {
+                    slider.show(3, 'slow');
                 });
             });
         </script>
@@ -23,15 +36,10 @@
     </head>
     <body>
         <div id="contentslider">
-            <ul>
-                <li style="background-color: yellow"></li>
-                <li style="background-color: black"></li>
-                <li style="background-color: yellow"></li>
-                <li style="background-color: black"></li>
-                <li style="background-color: white"></li>
-            </ul>
         </div>
-        <button id="prev">Prev</button>
-        <button id="next">Next</button>
+        <button id="b0">0</button>
+        <button id="b1">1</button>
+        <button id="b2">2</button>
+        <button id="b3">3</button>
     </body>
 </html>
