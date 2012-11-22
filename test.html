@@ -5,6 +5,7 @@
         <script type="text/javascript">
             $(document).ready(function() {
                 var slider = $('#contentslider').contentSlider({
+                    index: 2,
                     hasIndex: function(index) {
                         return $.inArray(index, [0, 1, 2, 3]) != -1;
                     },

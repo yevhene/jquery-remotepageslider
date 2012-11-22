@@ -81,7 +81,7 @@
                         if (liBeforeI) {
                             liBeforeI.after(li);
                         } else {
-                            _ul.append(li);
+                            _ul.prepend(li);
                         }
                     }
                     if (i === index) {
