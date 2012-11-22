@@ -93,13 +93,13 @@
 
         var lock = false;
         var show = function(index, animation_options) {
+            if (!_config.hasPageWithIndex(index)) {
+                return;
+            }
             if (lock) {
                 return;
             }
             lock = true;
-            if (!_config.hasPageWithIndex(index)) {
-                return;
-            }
 
             var page = loadRange(index);
             var animation = { duration: 0 };
