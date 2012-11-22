@@ -55,10 +55,8 @@
         var lock = {
             show: false
         };
-        var show = function(index, animation) {
-            if (animation === undefined) {
-                animation = 0;
-            }
+        // animation - attributes map.
+        var show = function(index, animation_options) {
             if (lock.show) {
                 return;
             }
@@ -94,11 +92,18 @@
 
             var mainLiHCenter = mainLi.position().left + mainLi.width() / 2;
             var hPosition = _container.width() / 2 - mainLiHCenter;
+            var animation = { duration: 0 };
+            if (animation_options) {
+                $.extend(animation, animation_options);
+            }
+            $.extend(animation, {
+                complete: function() {
+                    lock.show = false;
+                }
+            });
             _ul.animate({
                 left: hPosition
-            }, animation, function() {
-                lock.show = false;
-            });
+            }, animation);
         };
 
         (function init() {
