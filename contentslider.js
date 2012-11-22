@@ -30,7 +30,7 @@
         var _container;
         var _ul;
 
-        var firstLiWithIndex = function(index) {
+        var findLiWithIndex = function(index) {
             var result = null;
             _ul.find('li').each(function() {
                 if ($(this).data('index') === index) {
@@ -52,14 +52,22 @@
             return result;
         };
 
+        var ulPosition = function(li) {
+            if (!li) {
+                li = findLiWithIndex(_currentIndex);
+            }
+            var liHCenter = li.position().left + li.width() / 2;
+            return _container.width() / 2 - liHCenter;
+        };
+
         var loadRange = function(index) {
-            var leftIndex = index - _config.loadRange;
-            var rightIndex = index + _config.loadRange;
-            var mainLi;
+            var firstIndex = index - _config.loadRange;
+            var lastIndex = index + _config.loadRange;
+            var centerLi;
             var i = 0;
-            for (i = leftIndex; i <= rightIndex; ++i) {
+            for (i = firstIndex; i <= lastIndex; ++i) {
                 if (_config.hasIndex(i)) {
-                    var li = firstLiWithIndex(i);
+                    var li = findLiWithIndex(i);
                     if (!li) {
                         var page = _config.getPage(i);
                         li = $('<li></li>');
@@ -74,11 +82,12 @@
                         }
                     }
                     if (i === index) {
-                        mainLi = li;
+                        centerLi = li;
                     }
                 }
             }
-            return mainLi;
+            _ul.css("left", ulPosition());
+            return centerLi;
         };
 
         var lock = false;
@@ -92,19 +101,18 @@
             }
 
             var li = loadRange(index);
-            var liHCenter = li.position().left + li.width() / 2;
-            var hPosition = _container.width() / 2 - liHCenter;
             var animation = { duration: 0 };
             if (animation_options) {
                 $.extend(animation, animation_options);
             }
             $.extend(animation, {
                 complete: function() {
+                    _currentIndex = index;
                     lock = false;
                 }
             });
             _ul.animate({
-                left: hPosition
+                left: ulPosition(li)
             }, animation);
         };
 

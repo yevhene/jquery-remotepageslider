@@ -7,7 +7,7 @@
                 var slider = $('#contentslider').contentSlider({
                     index: 2,
                     hasIndex: function(index) {
-                        return $.inArray(index, [0, 1, 2, 3]) != -1;
+                    return index >= 0 && index <= 6;
                     },
                     getPage: function(index) {
                         return $('<div style="width:320px; height:180px; margin:10px; background-color:yellow">' + index + '</div>');
@@ -24,6 +24,15 @@
                 });
                 $('#b3').click(function() {
                     slider.show(3, { duration: 'slow' });
+                });
+                $('#b4').click(function() {
+                    slider.show(4, { duration: 'slow' });
+                });
+                $('#b5').click(function() {
+                    slider.show(5, { duration: 'slow' });
+                });
+                $('#b6').click(function() {
+                    slider.show(6, { duration: 'slow' });
                 });
             });
         </script>
@@ -42,5 +51,8 @@
         <button id="b1">1</button>
         <button id="b2">2</button>
         <button id="b3">3</button>
+        <button id="b4">4</button>
+        <button id="b5">5</button>
+        <button id="b6">6</button>
     </body>
 </html>
