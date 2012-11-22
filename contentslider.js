@@ -11,10 +11,10 @@
     var CONFIG_DEFAULTS = {
         index: 0,
         loadRange: 1,
-        getPage: function(index) {
+        getPageContent: function(index) {
             return null;
         },
-        hasIndex: function(index) {
+        hasPageWithIndex: function(index) {
             return false;
         }
     };
@@ -28,11 +28,11 @@
 
         var _root = $(this);
         var _container;
-        var _ul;
+        var _list;
 
-        var findLiWithIndex = function(index) {
+        var findPageWithIndex = function(index) {
             var result = null;
-            _ul.find('li').each(function() {
+            _list.find('li').each(function() {
                 if ($(this).data('index') === index) {
                     result = $(this);
                     return false;
@@ -41,9 +41,9 @@
             return result;
         };
 
-        var findLiBeforeIndex = function(index) {
+        var findPageBeforeIndex = function(index) {
             var result = null;
-            _ul.find('li').each(function(){
+            _list.find('li').each(function(){
                 if ($(this).data('index') > index) {
                     return false;
                 }
@@ -52,42 +52,43 @@
             return result;
         };
 
-        var ulPosition = function(li) {
-            if (!li) {
-                li = findLiWithIndex(_currentIndex);
+        // If no page, search hPosition for current page.
+        var listHPosition = function(page) {
+            if (!page) {
+                page = findPageWithIndex(_currentIndex);
             }
-            var liHCenter = li.position().left + li.width() / 2;
-            return _container.width() / 2 - liHCenter;
+            var pageHCenter = page.position().left + page.width() / 2;
+            return _container.width() / 2 - pageHCenter;
         };
 
         var loadRange = function(index) {
             var firstIndex = index - _config.loadRange;
             var lastIndex = index + _config.loadRange;
-            var centerLi;
+            var centerPage;
             var i = 0;
             for (i = firstIndex; i <= lastIndex; ++i) {
-                if (_config.hasIndex(i)) {
-                    var li = findLiWithIndex(i);
-                    if (!li) {
-                        var page = _config.getPage(i);
-                        li = $('<li></li>');
-                        li.data('index', i);
-                        li.css(LI_CSS);
-                        li.append(page);
-                        var liBeforeI = findLiBeforeIndex(i);
-                        if (liBeforeI) {
-                            liBeforeI.after(li);
+                if (_config.hasPageWithIndex(i)) {
+                    var page = findPageWithIndex(i);
+                    if (!page) {
+                        var pageContent = _config.getPageContent(i);
+                        page = $('<li></li>');
+                        page.data('index', i);
+                        page.css(LI_CSS);
+                        page.append(pageContent);
+                        var pageBeforeI = findPageBeforeIndex(i);
+                        if (pageBeforeI) {
+                            pageBeforeI.after(page);
                         } else {
-                            _ul.prepend(li);
+                            _list.prepend(page);
                         }
                     }
                     if (i === index) {
-                        centerLi = li;
+                        centerPage = page;
                     }
                 }
             }
-            _ul.css("left", ulPosition());
-            return centerLi;
+            _list.css("left", listHPosition());
+            return centerPage;
         };
 
         var lock = false;
@@ -96,11 +97,11 @@
                 return;
             }
             lock = true;
-            if (!_config.hasIndex(index)) {
+            if (!_config.hasPageWithIndex(index)) {
                 return;
             }
 
-            var li = loadRange(index);
+            var page = loadRange(index);
             var animation = { duration: 0 };
             if (animation_options) {
                 $.extend(animation, animation_options);
@@ -111,8 +112,8 @@
                     lock = false;
                 }
             });
-            _ul.animate({
-                left: ulPosition(li)
+            _list.animate({
+                left: listHPosition(page)
             }, animation);
         };
 
@@ -123,8 +124,8 @@
                 'position': 'relative'
             });
             _root.append(_container);
-            _ul = $('<ul></ul>');
-            _ul.css({
+            _list = $('<ul></ul>');
+            _list.css({
                 'overflow': 'visible',
                 'width': '999999px',
                 'height': '100%',
@@ -132,7 +133,7 @@
                 'padding': '0',
                 'position': 'relative'
             });
-            _container.append(_ul);
+            _container.append(_list);
             show(_currentIndex);
         }());
 

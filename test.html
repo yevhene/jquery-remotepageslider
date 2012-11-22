@@ -6,10 +6,10 @@
             $(document).ready(function() {
                 var slider = $('#contentslider').contentSlider({
                     index: 2,
-                    hasIndex: function(index) {
+                    hasPageWithIndex: function(index) {
                     return index >= 0 && index <= 6;
                     },
-                    getPage: function(index) {
+                    getPageContent: function(index) {
                         return $('<div style="width:320px; height:180px; margin:10px; background-color:yellow">' + index + '</div>');
                     }
                 });
