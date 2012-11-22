@@ -52,18 +52,7 @@
             return result;
         };
 
-        var lock = {
-            show: false
-        };
-        // animation - attributes map.
-        var show = function(index, animation_options) {
-            if (lock.show) {
-                return;
-            }
-            lock.show = true;
-            if (!_config.hasIndex(index)) {
-                return;
-            }
+        var loadRange = function(index) {
             var leftIndex = index - _config.loadRange;
             var rightIndex = index + _config.loadRange;
             var mainLi;
@@ -89,16 +78,29 @@
                     }
                 }
             }
+            return mainLi;
+        };
 
-            var mainLiHCenter = mainLi.position().left + mainLi.width() / 2;
-            var hPosition = _container.width() / 2 - mainLiHCenter;
+        var lock = false;
+        var show = function(index, animation_options) {
+            if (lock) {
+                return;
+            }
+            lock = true;
+            if (!_config.hasIndex(index)) {
+                return;
+            }
+
+            var li = loadRange(index);
+            var liHCenter = li.position().left + li.width() / 2;
+            var hPosition = _container.width() / 2 - liHCenter;
             var animation = { duration: 0 };
             if (animation_options) {
                 $.extend(animation, animation_options);
             }
             $.extend(animation, {
                 complete: function() {
-                    lock.show = false;
+                    lock = false;
                 }
             });
             _ul.animate({
