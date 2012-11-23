@@ -11,8 +11,8 @@
     var CONFIG_DEFAULTS = {
         index: 0,
         loadRange: 1,
-        getPageContent: function(index) {
-            return null;
+        getPageContent: function(index, callback) {
+            callback(null);
         },
         hasPageWithIndex: function(index) {
             return false;
