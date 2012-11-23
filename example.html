@@ -11,6 +11,7 @@
                         min: 0,
                         max: ITEMS_COUNT - 1
                     },
+                    cycle: true,
                     getPageContent: function(index, callback) {
                         setTimeout(function() {
                             callback('<div style="width:320px; height:360px; margin:10px; background-color:yellow">' + index + '</div>');
@@ -22,9 +23,6 @@
                         return;
                     }
                     var prevIndex = slider.index() - 1;
-                    if (prevIndex < 0) {
-                        prevIndex = ITEMS_COUNT - 1;
-                    }
                     var prevButton = $(this);
                     var isLoading = slider.show(prevIndex, {
                         animation: {
@@ -45,9 +43,6 @@
                         return;
                     }
                     var nextIndex = slider.index() + 1;
-                    if (nextIndex >= ITEMS_COUNT) {
-                        nextIndex = 0;
-                    }
                     var nextButton = $(this);
                     var isLoading = slider.show(nextIndex, {
                         animation: {

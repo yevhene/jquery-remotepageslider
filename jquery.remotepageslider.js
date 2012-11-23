@@ -31,7 +31,8 @@
         indexRange: {
             min: null,
             max: null
-        }
+        },
+        cycle: false // Need min and max index to be set.
     };
 
     $.fn.remotePageSlider = function(options) {
@@ -48,19 +49,52 @@
         var isValidIndex = function(index) {
             var min = _config.indexRange.min;
             var max = _config.indexRange.max;
-            if (min !== undefined && min !== null && index < min) {
-                return false;
-            }
-            if (max !== undefined && min !== null && index > max) {
-                return false;
+            if (_config.cycle) {
+                if (min === undefined || min === null) {
+                    return false;
+                }
+                if (max === undefined || min === null) {
+                    return false;
+                }
+            } else {
+                if (min !== undefined && min !== null && index < min) {
+                    return false;
+                }
+                if (max !== undefined && min !== null && index > max) {
+                    return false;
+                }
             }
             return true;
+        };
+
+        var realIndex = function(cycleIndex) {
+            var min = _config.indexRange.min;
+            var max = _config.indexRange.max;
+            if (cycleIndex > max) {
+                return min + (cycleIndex - min) % (max - min + 1);
+            }
+            if (cycleIndex < min) {
+                return max - Math.abs(cycleIndex - min + 1) % (max - min + 1);
+            }
+            return cycleIndex;
         };
 
         var findPageWithIndex = function(index) {
             var result = null;
             _list.find('li').each(function() {
                 if ($(this).data('index') === index) {
+                    result = $(this);
+                    return false;
+                }
+            });
+            return result;
+        };
+
+        var findPageWithCycleIndex = function(index) {
+            var result = null;
+            var real = realIndex(index);
+            _list.find('li').each(function() {
+                if (realIndex($(this).data('index')) === real) {
                     result = $(this);
                     return false;
                 }
@@ -82,26 +116,44 @@
         // If no page, search hPosition for current page.
         var listHPosition = function(page) {
             if (!page) {
-                page = findPageWithIndex(_currentIndex);
+                page = findPageWithCycleIndex(_currentIndex);
             }
             var pageHCenter = page.position().left + page.width() / 2;
             return _container.width() / 2 - pageHCenter;
         };
 
-        var appendPagesWithContents = function(pagesContents) {
+        var insertPage = function(page) {
+            var index = page.data('index');
+            var pageBeforeIndex = findPageBeforeIndex(index);
+            if (pageBeforeIndex) {
+                pageBeforeIndex.after(page);
+            } else {
+                _list.prepend(page);
+            }
+        };
+
+        var insertPageWithContent = function(index, content) {
+            page = $('<li></li>');
+            page.data('index', index);
+            page.css(PAGE_CSS);
+            page.append(content);
+            insertPage(page);
+        };
+
+        var insertPagesWithContents = function(pagesContents) {
             $.each(pagesContents, function(i, content) {
                 // int to string jquery fix.
                 i = parseInt(i, 10);
-                page = $('<li></li>');
-                page.data('index', i);
-                page.css(PAGE_CSS);
-                page.append(content);
-                var pageBeforeI = findPageBeforeIndex(i);
-                if (pageBeforeI) {
-                    pageBeforeI.after(page);
-                } else {
-                    _list.prepend(page);
-                }
+                insertPageWithContent(i, content);
+            });
+        };
+
+        var movePages = function(pagesToBeMoved) {
+            $.each(pagesToBeMoved, function(newIndex, page) {
+                newIndex = parseInt(newIndex, 10);
+                page.detach();
+                page.data('index', newIndex);
+                insertPage(page);
             });
         };
 
@@ -109,6 +161,7 @@
             var firstIndex = index - _config.loadRange;
             var lastIndex = index + _config.loadRange;
             var pagesContents = {};
+            var pagesToBeMoved = {};
             var i = 0;
             var isAllPagesLoaded = function() {
                 var result = true;
@@ -119,9 +172,15 @@
                 });
                 return result;
             };
-            var finish = function(hasNewPages) {
-                if (hasNewPages) {
-                    appendPagesWithContents(pagesContents);
+            var finish = function() {
+                if (Object.keys(pagesToBeMoved).length > 0) {
+                    movePages(pagesToBeMoved);
+                }
+                if (Object.keys(pagesContents).length > 0) {
+                    insertPagesWithContents(pagesContents);
+                }
+                if (Object.keys(pagesToBeMoved).length > 0 ||
+                    Object.keys(pagesContents).length > 0) {
                     // Fix list position after elements inserted.
                     _list.css("left", listHPosition());
                 }
@@ -129,16 +188,24 @@
                 callback(findPageWithIndex(index));
             };
             var getPageContent = function(i) {
-                _config.getPageContent(i, function(content) {
+                // if cycle index.
+                real = realIndex(i);
+                _config.getPageContent(real, function(content) {
                     pagesContents[i] = $(content);
                     if (isAllPagesLoaded()) {
-                        finish(true);
+                        finish();
                     }
                 });
             };
             for (i = firstIndex; i <= lastIndex; ++i) {
                 if (isValidIndex(i)) {
                     var page = findPageWithIndex(i);
+                    if (!page && _config.cycle) {
+                        page = findPageWithCycleIndex(i);
+                        if (page) {
+                            pagesToBeMoved[i] = page;
+                        }
+                    }
                     if (!page) {
                         pagesContents[i] = null;
                     }
