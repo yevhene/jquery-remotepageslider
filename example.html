@@ -7,8 +7,9 @@
                 var ITEMS_COUNT = 7;
                 var slider = $('#content').remotePageSlider({
                     index: 0,
-                    hasPageWithIndex: function(index) {
-                        return index >= 0 && index < ITEMS_COUNT;
+                    indexRange: {
+                        min: 0,
+                        max: ITEMS_COUNT - 1
                     },
                     getPageContent: function(index, callback) {
                         setTimeout(function() {

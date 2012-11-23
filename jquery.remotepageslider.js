@@ -28,8 +28,9 @@
         getPageContent: function(index, callback) {
             callback(null);
         },
-        hasPageWithIndex: function(index) {
-            return false;
+        indexRange: {
+            min: null,
+            max: null
         }
     };
 
@@ -43,6 +44,18 @@
         var _root = $(this);
         var _container;
         var _list;
+
+        var isValidIndex = function(index) {
+            var min = _config.indexRange.min;
+            var max = _config.indexRange.max;
+            if (min !== undefined && min !== null && index < min) {
+                return false;
+            }
+            if (max !== undefined && min !== null && index > max) {
+                return false;
+            }
+            return true;
+        };
 
         var findPageWithIndex = function(index) {
             var result = null;
@@ -124,7 +137,7 @@
                 });
             };
             for (i = firstIndex; i <= lastIndex; ++i) {
-                if (_config.hasPageWithIndex(i)) {
+                if (isValidIndex(i)) {
                     var page = findPageWithIndex(i);
                     if (!page) {
                         pagesContents[i] = null;
@@ -164,7 +177,7 @@
         var _lock = false;
         // Returns true if something need to be loaded.
         var show = function(index, options) {
-            if (!_config.hasPageWithIndex(index)) {
+            if (!isValidIndex(index)) {
                 return false;
             }
             if (_lock) {
