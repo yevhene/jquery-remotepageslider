@@ -68,6 +68,9 @@
         };
 
         var realIndex = function(cycleIndex) {
+            if (cycleIndex === undefined || cycleIndex === null) {
+                cycleIndex = _currentIndex;
+            }
             var min = _config.indexRange.min;
             var max = _config.indexRange.max;
             if (cycleIndex > max) {
@@ -290,7 +293,8 @@
         return {
             show: show,
             index: index,
-            isLocked: isLocked
+            isLocked: isLocked,
+            realIndex: realIndex
         };
     };
 }(jQuery));
