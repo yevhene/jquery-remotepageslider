@@ -125,7 +125,9 @@
                 });
             } else {
                 finish();
+                return false;
             }
+            return true; // Is have pages need to be loaded.
         };
 
         var moveTo = function(page, animation_options, complete) {
@@ -144,23 +146,31 @@
         };
 
         var _lock = false;
-        var show = function(index, animation) {
+        // Returns true if something need to be loaded.
+        var show = function(index, options) {
             if (!_config.hasPageWithIndex(index)) {
-                return;
+                return false;
             }
             if (_lock) {
-                return;
+                return false;
             }
             _lock = true;
+            options = options || {};
 
             var loadRangeCallback = function(page) {
-                moveTo(page, animation, function() {
+                if (options && options.loaded) {
+                    options.loaded();
+                }
+                moveTo(page, options.animation, function() {
                     _currentIndex = index;
                     _lock = false;
+                    if (options && options.done) {
+                        options.done();
+                    }
                 });
             };
 
-            loadPagesRange(index, loadRangeCallback);
+            return loadPagesRange(index, loadRangeCallback);
         };
 
         (function init() {
@@ -187,9 +197,14 @@
             return _currentIndex;
         };
 
+        var isLocked = function() {
+            return _lock;
+        };
+
         return {
             show: show,
-            index: index
+            index: index,
+            isLocked: isLocked
         };
     };
 }(jQuery));

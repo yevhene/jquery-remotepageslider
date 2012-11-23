@@ -4,57 +4,105 @@
         <script type="text/javascript" src="jquery.remotepageslider.js"></script>
         <script type="text/javascript">
             $(document).ready(function() {
+                var ITEMS_COUNT = 7;
                 var slider = $('#content').remotePageSlider({
-                    index: 2,
+                    index: 0,
                     hasPageWithIndex: function(index) {
-                    return index >= 0 && index <= 6;
+                        return index >= 0 && index < ITEMS_COUNT;
                     },
                     getPageContent: function(index, callback) {
                         setTimeout(function() {
-                            callback('<div style="width:320px; height:180px; margin:10px; background-color:yellow">' + index + '</div>');
-                        }, 1000);
+                            callback('<div style="width:320px; height:360px; margin:10px; background-color:yellow">' + index + '</div>');
+                        }, 500);
                     }
                 });
-                $('#b0').click(function() {
-                    slider.show(0, { duration: 'slow' });
+                $('#prev').click(function() {
+                    if (slider.isLocked()) {
+                        return;
+                    }
+                    var prevIndex = slider.index() - 1;
+                    if (prevIndex < 0) {
+                        prevIndex = ITEMS_COUNT - 1;
+                    }
+                    var prevButton = $(this);
+                    var isLoading = slider.show(prevIndex, {
+                        animation: {
+                            duration: 'slow'
+                        },
+                        loaded: function() {
+                            if (isLoading) {
+                                prevButton.text('<');
+                            }
+                        }
+                    });
+                    if (isLoading) {
+                        prevButton.text('Loading');
+                    }
                 });
-                $('#b1').click(function() {
-                    slider.show(1, { duration: 'slow' });
-                });
-                $('#b2').click(function() {
-                    slider.show(2, { duration: 'slow' });
-                });
-                $('#b3').click(function() {
-                    slider.show(3, { duration: 'slow' });
-                });
-                $('#b4').click(function() {
-                    slider.show(4, { duration: 'slow' });
-                });
-                $('#b5').click(function() {
-                    slider.show(5, { duration: 'slow' });
-                });
-                $('#b6').click(function() {
-                    slider.show(6, { duration: 'slow' });
+                $('#next').click(function() {
+                    if (slider.isLocked()) {
+                        return;
+                    }
+                    var nextIndex = slider.index() + 1;
+                    if (nextIndex >= ITEMS_COUNT) {
+                        nextIndex = 0;
+                    }
+                    var nextButton = $(this);
+                    var isLoading = slider.show(nextIndex, {
+                        animation: {
+                            duration: 'slow'
+                        },
+                        loaded: function() {
+                            if (isLoading) {
+                                nextButton.text('>');
+                            }
+                        }
+                    });
+                    if (isLoading) {
+                        nextButton.text('Loading');
+                    }
                 });
             });
         </script>
         <style>
-            #content {
+            #parent {
                 width: 640;
-                height: 480;
+                height: 380;
                 background-color: green;
+                position: relative;
+            }
+
+            .button {
+                position: absolute;
+                width: 100;
+                height: 50;
+                top: 180;
+                background-color: blue;
+                color: white;
+                font-size: 26px;
+                opacity: 0.5;
+                font-weight: bold;
+                padding-top: 15;
+            }
+
+            #prev {
+                left: 0;
+                padding-left: 10px;
+                text-align: left;
+            }
+
+            #next {
+                right: 0;
+                padding-right: 10px;
+                text-align: right;
             }
         </style>
     </head>
     <body>
-        <div id="content">
+        <div id="parent">
+            <div id="content"></div>
+            <div id="prev" class="button">&lt;</div>
+            <div id="next" class="button">&gt;</div>
         </div>
-        <button id="b0">0</button>
-        <button id="b1">1</button>
-        <button id="b2">2</button>
-        <button id="b3">3</button>
-        <button id="b4">4</button>
-        <button id="b5">5</button>
-        <button id="b6">6</button>
     </body>
 </html>
