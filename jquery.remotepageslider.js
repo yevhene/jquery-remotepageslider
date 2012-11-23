@@ -1,5 +1,19 @@
 (function($) {
-    var LI_CSS = {
+    var CONTAINER_CSS = {
+        'overflow': 'hidden',
+        'position': 'relative'
+    };
+
+    var LIST_CSS = {
+        'overflow': 'visible',
+        'width': '999999px',
+        'height': '100%',
+        'margin': '0',
+        'padding': '0',
+        'position': 'relative'
+    };
+
+    var PAGE_CSS = {
         'float': 'left',
         'list-style': 'none',
         'margin': '0',
@@ -67,7 +81,7 @@
                 i = parseInt(i, 10);
                 page = $('<li></li>');
                 page.data('index', i);
-                page.css(LI_CSS);
+                page.css(PAGE_CSS);
                 page.append(content);
                 var pageBeforeI = findPageBeforeIndex(i);
                 if (pageBeforeI) {
@@ -121,7 +135,9 @@
                 $.each(pagesContents, function(i) {
                     // int to string jquery fix.
                     i = parseInt(i, 10);
-                    getPageContent(i);
+                    setTimeout(function() {
+                        getPageContent(i);
+                    }, 0);
                 });
             } else {
                 finish();
@@ -175,20 +191,10 @@
 
         (function init() {
             _container = $('<div></div>');
-            _container.css({
-                'overflow': 'hidden',
-                'position': 'relative'
-            });
+            _container.css(CONTAINER_CSS);
             _root.append(_container);
             _list = $('<ul></ul>');
-            _list.css({
-                'overflow': 'visible',
-                'width': '999999px',
-                'height': '100%',
-                'margin': '0',
-                'padding': '0',
-                'position': 'relative'
-            });
+            _list.css(LIST_CSS);
             _container.append(_list);
             show(_currentIndex);
         }());
