@@ -24,7 +24,7 @@
 
     var CONFIG_DEFAULTS = {
         index: 0,
-        loadRange: 1,
+        loadRange: 1, // 'all' if need to preload all.
         getPageContent: function(index, callback) {
             callback(null);
         },
@@ -160,9 +160,36 @@
             });
         };
 
+        var indexRange = function(index) {
+            var firstIndex;
+            var lastIndex;
+            if (_config.loadRange === 'all') {
+                if (_config.cycle === true) {
+                    var count = _config.indexRange.max - _config.indexRange.min + 1;
+                    if (count % 2 === 0) {
+                        firstIndex = index - count / 2 - 1;
+                        lastIndex = index + count / 2;
+                    } else {
+                        firstIndex = index - (count - 1) / 2;
+                        lastIndex = index + (count - 1) / 2;
+                    }
+                } else {
+                    firstIndex = _config.indexRange.min;
+                    lastIndex = _config.indexRange.max;
+                }
+            } else {
+                firstIndex = index - _config.loadRange;
+                lastIndex = index + _config.loadRange;
+            }
+            return {
+                firstIndex: firstIndex,
+                lastIndex: lastIndex
+            };
+        };
+
         var loadPagesRange = function(index, callback) {
-            var firstIndex = index - _config.loadRange;
-            var lastIndex = index + _config.loadRange;
+            var range = indexRange(index);
+            console.log(range);
             var pagesContents = {};
             var pagesToBeMoved = {};
             var i = 0;
@@ -200,7 +227,7 @@
                     }
                 });
             };
-            for (i = firstIndex; i <= lastIndex; ++i) {
+            for (i = range.firstIndex; i <= range.lastIndex; ++i) {
                 if (isValidIndex(i)) {
                     var page = findPageWithIndex(i);
                     if (!page && _config.cycle) {
