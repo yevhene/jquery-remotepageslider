@@ -167,7 +167,7 @@
                 if (_config.cycle === true) {
                     var count = _config.indexRange.max - _config.indexRange.min + 1;
                     if (count % 2 === 0) {
-                        firstIndex = index - count / 2 - 1;
+                        firstIndex = index - count / 2 + 1;
                         lastIndex = index + count / 2;
                     } else {
                         firstIndex = index - (count - 1) / 2;
@@ -189,7 +189,6 @@
 
         var loadPagesRange = function(index, callback) {
             var range = indexRange(index);
-            console.log(range);
             var pagesContents = {};
             var pagesToBeMoved = {};
             var i = 0;
