@@ -32,7 +32,8 @@
             min: null,
             max: null
         },
-        cycle: false // Need min and max index to be set.
+        cycle: false, // Need min and max index to be set.
+        ready: null // event
     };
 
     $.fn.remotePageSlider = function(options) {
@@ -305,7 +306,13 @@
             _list = $('<ul></ul>');
             _list.css(LIST_CSS);
             _container.append(_list);
-            show(_currentIndex);
+            show(_currentIndex, {
+                done: function() {
+                    if (_config.ready) {
+                        _config.ready();
+                    }
+                }
+            });
         }());
 
         var index = function() {
