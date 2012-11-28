@@ -85,7 +85,7 @@
 
         var findPageWithIndex = function(index) {
             var result = null;
-            _list.find('li').each(function() {
+            _list.children('li').each(function() {
                 if ($(this).data('index') === index) {
                     result = $(this);
                     return false;
@@ -97,7 +97,7 @@
         var findPageWithCycleIndex = function(index) {
             var result = null;
             var real = realIndex(index);
-            _list.find('li').each(function() {
+            _list.children('li').each(function() {
                 if (realIndex($(this).data('index')) === real) {
                     result = $(this);
                     return false;
@@ -108,7 +108,7 @@
 
         var findPageBeforeIndex = function(index) {
             var result = null;
-            _list.find('li').each(function(){
+            _list.children('li').each(function() {
                 if ($(this).data('index') > index) {
                     return false;
                 }
