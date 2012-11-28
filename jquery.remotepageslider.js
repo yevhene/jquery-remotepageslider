@@ -188,6 +188,10 @@
             };
         };
 
+        var fixPosition = function() {
+            _list.css("left", listHPosition());
+        };
+
         var loadPagesRange = function(index, callback) {
             var range = indexRange(index);
             var pagesContents = {};
@@ -211,8 +215,7 @@
                 }
                 if (Object.keys(pagesToBeMoved).length > 0 ||
                     Object.keys(pagesContents).length > 0) {
-                    // Fix list position after elements inserted.
-                    _list.css("left", listHPosition());
+                    fixPosition();
                 }
 
                 callback(findPageWithIndex(index));
@@ -327,7 +330,8 @@
             show: show,
             index: index,
             isLocked: isLocked,
-            realIndex: realIndex
+            realIndex: realIndex,
+            fixPosition: fixPosition
         };
     };
 }(jQuery));
